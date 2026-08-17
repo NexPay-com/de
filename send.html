@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+<title>NexPay — Transfer</title>
+<meta name="theme-color" content="#ffffff" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --pri: #0284c7;
+    --pri2: #4f46e5;
+    --text: #0f172a;
+    --text-dim: #64748b;
+  }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(at 100% 0%, rgba(79, 70, 229, 0.04) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(2, 132, 199, 0.04) 0px, transparent 50%);
+    color: var(--text); padding: 20px; overflow: hidden;
+  }
+
+  /* CONTAINER */
+  .container { width: 100%; max-width: 440px; }
+
+  h1 {
+    font-size: clamp(24px, 6vw, 28px); font-weight: 800; margin-bottom: 24px;
+    color: var(--text);
+    text-align: center; letter-spacing: -0.5px;
+  }
+
+  .form {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 28px; padding: 28px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    display: flex; flex-direction: column; gap: 20px;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  label { font-weight: 700; font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: block; }
+
+  /* INPUT FIELDS */
+  select, input {
+    width: 100%; padding: 16px; border-radius: 14px;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    color: var(--text); font-size: 16px; outline: none;
+    transition: all 0.2s ease;
+  }
+
+  select:focus, input:focus {
+    background: #ffffff;
+    border-color: var(--pri);
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.08);
+  }
+
+  input::placeholder { color: var(--text-dim); opacity: 0.7; }
+
+  /* FEE BOX */
+  .fee {
+    margin-top: 8px; font-size: 13px; color: #10b981;
+    font-weight: 700; display: none;
+    padding: 10px 14px; border-radius: 10px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+  }
+
+  /* BUTTON */
+  .btn {
+    margin-top: 10px; padding: 16px; border: none; border-radius: 14px;
+    font-weight: 800; font-size: 16px;
+    background: linear-gradient(90deg, #4f46e5, #0284c7); color: #fff;
+    cursor: pointer; transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+
+  .btn:hover { opacity: 0.95; transform: translateY(-1px); }
+  .btn:active { transform: scale(0.96); opacity: 0.9; }
+
+  /* ALERT BOX */
+  .alert {
+    position: fixed; bottom: 30px; left: 20px; right: 20px;
+    padding: 18px; border-radius: 16px; font-weight: 700;
+    text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    color: #fff; backdrop-filter: blur(10px);
+    opacity: 0; pointer-events: none; transform: translateY(10px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10000; font-size: 14px;
+  }
+  .alert.show { opacity: 1; transform: translateY(0); }
+
+  .back-link {
+    text-align: center; margin-top: 20px;
+    color: var(--text-dim); font-size: 14px; text-decoration: none;
+    display: block; font-weight: 600;
+  }
+  .back-link:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Transfer Assets</h1>
+
+  <div class="form">
+    <div>
+      <label for="coin">Choose Asset</label>
+      <select id="coin">
+        <option value="USDT">USDT • Tether (TRC20)</option>
+        <option value="BTC">BTC • Bitcoin</option>
+        <option value="ETH">ETH • Ethereum (ERC20)</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="uid">Recipient account UID</label>
+      <input type="number" id="uid" placeholder="9-digit UID" pattern="\d*" inputmode="numeric" />
+      <div id="fee" class="fee">Network Fee: 1.43 USDT</div>
+    </div>
+
+    <button class="btn" onclick="checkUID()">Preview Transfer</button>
+  </div>
+
+  <a href="dashboard.html" class="back-link">Return to Dashboard</a>
+</div>
+
+<div id="alert" class="alert"></div>
+
+<script>
+// Original function logic kept exactly as provided
+function showAlert(message, success=true){
+  const alertBox = document.getElementById('alert');
+  alertBox.textContent = message;
+  alertBox.style.background = success
+    ? "#10b981"
+    : "#ef4444";
+  alertBox.classList.add('show');
+  setTimeout(()=>{alertBox.classList.remove('show')},2500);
+}
+
+function checkUID(){
+  const uid = document.getElementById('uid').value.trim();
+  const feeBox = document.getElementById('fee');
+  if(uid.length < 9){
+    showAlert("❌ UID must be at least 9 digits", false);
+    feeBox.style.display = "none";
+    return;
+  }
+  feeBox.style.display = "block";
+  // Logic: Always insufficient for the transfer preview
+  showAlert("❌ Insufficient USDT to cover network fees.", false);
+}
+
+// Session Timer Logic (Kept exactly as original)
+const TIMEOUT_DURATION = 60000;
+function checkSession() {
+    const currentTime = Date.now();
+    const lastActive = localStorage.getItem('lastActiveTime');
+    if (lastActive) {
+        if (currentTime - parseInt(lastActive) >= TIMEOUT_DURATION) {
+            localStorage.removeItem('lastActiveTime');
+            window.location.href = 'pin.html';
+        }
+    } else {
+        localStorage.setItem('lastActiveTime', currentTime.toString());
+    }
+}
+function resetTimer() { localStorage.setItem('lastActiveTime', Date.now().toString()); }
+['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(ev => document.addEventListener(ev, resetTimer));
+checkSession();
+setInterval(checkSession, 2000);
+</script>
+
+</body>
+</html>
