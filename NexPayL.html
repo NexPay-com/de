@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NexPay — Secure Login</title>
+<meta name="theme-color" content="#ffffff" />
+<style>
+  :root{
+    --bg:#f8fafc; --card:#ffffff; --muted:#64748b; --pri:#0284c7; --pri2:#4f46e5;
+    --br:20px; --text:#0f172a; --border:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background: radial-gradient(1200px 600px at 80% -10%, rgba(79,70,229,.05), transparent 60%),
+              radial-gradient(900px 500px at -10% 100%, rgba(2,132,199,.05), transparent 60%), var(--bg);
+    color:var(--text); font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  }
+  .center{min-height:100%; display:grid; place-items:center; padding:20px}
+  .panel{
+    width:min(500px,94vw); background: var(--card);
+    border:1px solid var(--border); border-radius: clamp(16px,3vw,28px); padding: clamp(24px,5vw,44px);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,.05), 0 8px 10px -6px rgba(0,0,0,.05);
+  }
+  .title{
+    font-size: clamp(22px,3.2vw,28px); font-weight:700; color:var(--text);
+    margin-bottom:20px; text-align:center; letter-spacing:-0.5px;
+  }
+  textarea{
+    width:100%; min-height:120px; border-radius:14px; padding:16px; resize:none;
+    background:#f8fafc; border:1px solid var(--border); color:var(--text); font-size:14px;
+    outline:none; transition:all 0.2s ease;
+  }
+  textarea:focus{
+    border-color:var(--pri);
+    box-shadow: 0 0 0 3px rgba(2,132,199,.1);
+    background:#ffffff;
+  }
+  textarea::placeholder{color:var(--muted); opacity:0.8;}
+  .btn{
+    margin-top:20px; cursor:pointer; border:none; padding:14px 18px; border-radius:14px; font-weight:700;
+    background: linear-gradient(90deg,#4f46e5,#0284c7); color:#fff; width:100%; font-size:15px;
+    box-shadow: 0 4px 12px rgba(79,70,229,.25); transition:all 0.2s ease;
+  }
+  .btn:hover{opacity:.95; transform:translateY(-1px);}
+  .alert{
+    margin-top:16px; padding:14px; border-radius:12px; font-size:14px; font-weight:600; text-align:center;
+    display:none;
+  }
+  .alert.success{background:rgba(16,185,129,.08); color:#10b981; border:1px solid rgba(16,185,129,.2)}
+  .alert.error{background:rgba(239,68,68,.08); color:#ef4444; border:1px solid rgba(239,68,68,.2)}
+</style>
+</head>
+<body>
+<div class="center">
+  <div class="panel">
+    <div class="title">Login to NexPay</div>
+    <textarea id="phraseInput" placeholder="Paste your 17-word recovery phrase here..."></textarea>
+    <button id="loginBtn" class="btn">Login</button>
+    <div id="alertBox" class="alert"></div>
+  </div>
+</div>
 
+<script>
+  const savedPhrase = localStorage.getItem('nexpay_phrase');
+  const alertBox = document.getElementById('alertBox');
+
+  document.getElementById('loginBtn').addEventListener('click', ()=>{
+    const input = document.getElementById('phraseInput').value.trim();
+    if(!savedPhrase){
+      alertBox.textContent = "No account exists. Please sign up first.";
+      alertBox.className = "alert error";
+      alertBox.style.display = "block";
+      return;
+    }
+    if(input === savedPhrase){
+      alertBox.textContent = "✅ Login successful! Redirecting…";
+      alertBox.className = "alert success";
+      alertBox.style.display = "block";
+      setTimeout(()=>{ window.location.href="pin.html"; }, 2000);
+    }else{
+      alertBox.textContent = "❌ This account does not exist.";
+      alertBox.className = "alert error";
+      alertBox.style.display = "block";
+    }
+  });
+</script>
+</body>
+</html>
