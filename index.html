@@ -1,1 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NexPay — Secure Crypto Wallet</title>
+<meta name="theme-color" content="#ffffff" />
+<!-- Open Graph Meta Tags -->
+<meta property="og:title" content="NexPay.com" />
+<meta property="og:description" content="Join over 42,000 users trading Bitcoin, USDT, and more securely with NexPay P2P. Fast, reliable, and trusted crypto transactions." />
+<meta property="og:image" content="https://tse2.mm.bing.net/th/id/OIP.pqODzZ87AJWeUQYDntvwTQHaEj?rs=1&pid=ImgDetMain&o=7&rm=3" />
+<meta property="og:url" content="https://capitalnest.github.io/NexPay.com" />
+<meta property="og:type" content="website" />
 
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="NexPay.com" />
+<meta name="twitter:description" content="Buy and sell crypto instantly with NexPay. 42,000+ active users. Secure. Fast. Reliable." />
+<meta name="twitter:image" content="https://tse2.mm.bing.net/th/id/OIP.pqODzZ87AJWeUQYDntvwTQHaEj?rs=1&pid=ImgDetMain&o=7&rm=3" />
+
+<!-- General Meta Tags -->
+<meta name="description" content="NexPay is a trusted P2P crypto marketplace with over 42,000 users. Buy and sell Bitcoin, USDT, and more with secure transactions." />
+<meta name="author" content="NexPay Team" />
+
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --muted: #64748b;
+    --text-main: #0f172a;
+    --pri: #0560fa;
+    --pri-hover: #024ebd;
+    --pri-light: #eff6ff;
+    --ok: #10b981;
+    --border: #e2e8f0;
+    --shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px clamp(20px, 5vw, 64px);
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text-main);
+  }
+
+  .logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0560fa, #00d2ff);
+    position: relative;
+    box-shadow: 0 4px 12px rgba(5, 96, 250, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 900;
+    font-size: 20px;
+    font-family: sans-serif;
+  }
+
+  /* Added style for the 'N' logo within the .logo box */
+  .logo span.logo-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 9px;
+    background: #ffffff;
+    z-index: 0; /* Position behind the text */
+  }
+
+  /* Modified styles for the 'N' logo within the .logo box */
+  .logo span.logo-text {
+    position: relative;
+    z-index: 1;
+    color: #0560fa; /* Set text color to match theme */
+    background: linear-gradient(135deg, #0560fa, #00d2ff);
+    -webkit-background-clip: text; /* Gradient text effect */
+    -webkit-text-fill-color: transparent;
+  }
+
+  .brand span {
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    font-size: clamp(18px, 2vw, 22px);
+    color: var(--text-main);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav a {
+    color: #475569;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+
+  .nav a:hover {
+    color: var(--pri);
+    background: var(--pri-light);
+  }
+
+  /* Main Hero */
+  main.hero {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(24px, 5vw, 60px) 20px;
+  }
+
+  /* Main Card Container */
+  .card {
+    width: min(1080px, 100%);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(24px, 4vw, 48px);
+    padding: clamp(28px, 4vw, 48px);
+    margin: auto;
+  }
+
+  @media (max-width: 900px) {
+    .card { grid-template-columns: 1fr; }
+  }
+
+  /* Typography */
+  .title {
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.8px;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin-top: 14px;
+    font-size: clamp(15px, 2vw, 17px);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* Pills & Badges */
+  .stats {
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 99px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    color: #334155;
+    font-size: 13px;
+  }
+
+  .pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  }
+
+  /* Buttons */
+  .cta {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    cursor: pointer;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    transition: all 0.2s ease;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn-pri {
+    background: var(--pri);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(5, 96, 250, 0.3);
+  }
+
+  .btn-pri:hover {
+    background: var(--pri-hover);
+    box-shadow: 0 6px 20px rgba(5, 96, 250, 0.4);
+  }
+
+  .btn-sec {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+  }
+
+  .btn-sec:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  /* Visual Container (Right side) */
+  .glass {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .mock {
+    aspect-ratio: 4/3;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Added style for the large 'N' logo within the .mock box */
+  .mock span.mock-logo-text {
+    font-size: 100px;
+    font-weight: 900;
+    font-family: sans-serif;
+    background: linear-gradient(135deg, #0560fa, #00d2ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.2; /* Subtle opacity for background element */
+  }
+
+  .spark {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(180px 180px at 20% 20%, rgba(5, 96, 250, 0.08), transparent 70%),
+      radial-gradient(180px 180px at 80% 80%, rgba(0, 210, 255, 0.12), transparent 70%);
+    animation: drift 10s ease-in-out infinite alternate;
+    z-index: 0;
+  }
+
+  @keyframes drift {
+    to { transform: translateY(-6px) scale(1.02); }
+  }
+
+  /* Footer */
+  footer {
+    padding: 24px clamp(20px, 5vw, 64px);
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    background: #ffffff;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="#">
+      <!-- Added 'N' logo here -->
+      <div class="logo" aria-hidden="true"><span class="logo-text">N</span></div>
+      <span>NexPay</span>
+    </a>
+    <nav class="nav">
+      <a href="NexPayL.html">Login</a>
+      <a href="NexpayS.html">Sign Up</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <section class="card">
+      <div>
+        <h1 class="title">NexPay</h1>
+        <p class="subtitle">Buy, store, and move assets with institutional-grade security and silky-smooth UX.</p>
+
+        <div class="stats">
+          <div class="pill"><span class="dot"></span> Trusted by <strong>&nbsp;43,000+ active users</strong></div>
+          <div class="pill">Non-custodial • You own your keys</div>
+        </div>
+
+        <div class="cta">
+          <a class="btn btn-pri" href="NexpayS.html">Create your wallet</a>
+          <a class="btn btn-sec" href="NexPayL.html">I already have a phrase</a>
+        </div>
+      </div>
+
+      <div class="glass">
+        <div class="mock">
+          <div class="spark"></div>
+          <!-- Added large 'N' logo background here -->
+          <span class="mock-logo-text">N</span>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
+          <div class="pill">Zero fees on first transfer</div>
+          <div class="pill">24/7 Secure Cloud Backup</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© <span id="y"></span> NexPay. Secure. Fast.</footer>
+</div>
+<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</body>
+</html>
