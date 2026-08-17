@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NexPay — Sign Up</title>
+<meta name="theme-color" content="#ffffff" />
+<style>
+  :root{
+    --bg:#f8fafc; --card:#ffffff; --muted:#64748b; --pri:#0284c7; --pri2:#4f46e5;
+    --br:20px; --text:#0f172a; --border:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background: radial-gradient(1200px 600px at 80% -10%, rgba(79,70,229,.05), transparent 60%),
+              radial-gradient(900px 500px at -10% 100%, rgba(2,132,199,.05), transparent 60%), var(--bg);
+    color:var(--text); font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  }
+  .center{min-height:100%; display:grid; place-items:center; padding:20px}
+  .panel{
+    width:min(900px,94vw); background: var(--card);
+    border:1px solid var(--border); border-radius: clamp(16px,3vw,28px); padding: clamp(24px,5vw,44px);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,.05), 0 8px 10px -6px rgba(0,0,0,.05);
+  }
+  .loader, .phrase{transition:opacity .35s ease}
+  .nx{
+    display:flex; align-items:center; justify-content:center; font-weight:800;
+    font-size: clamp(28px,5vw,48px); letter-spacing:-0.5px;
+    background: linear-gradient(92deg, #0284c7, #4f46e5); -webkit-background-clip:text; color:transparent;
+  }
+  .orbit{
+    width:100px; height:100px; border-radius:50%; margin:24px auto 0;
+    position:relative; border:2px dashed rgba(79,70,229,.2);
+    animation: spin 6s linear infinite;
+  }
+  .orb{position:absolute; inset:-7px; width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, #fff, #4f46e5);
+    box-shadow: 0 0 16px rgba(79,70,229,.4); animation: bob 1.8s ease-in-out infinite;
+  }
+  .bar{height:6px; border-radius:999px; background:var(--border); overflow:hidden; margin:20px auto; width:70%}
+  .bar>span{display:block; height:100%; background: linear-gradient(90deg,#4f46e5,#0284c7); width:0%; animation: fill 7s ease forwards}
+  @keyframes bob{50%{transform:translateY(6px)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes fill{to{width:100%}}
 
+  .title{
+    font-size: clamp(22px,3.2vw,28px); font-weight:700; color:var(--text);
+    margin: 6px 0 8px; letter-spacing:-0.5px;
+  }
+  .warning{margin: 6px 0 20px; color:var(--muted); font-size:14px;}
+  .grid{display:grid; grid-template-columns: repeat(2,1fr); gap:12px; margin:16px 0 10px}
+  @media (max-width:680px){ .grid{grid-template-columns:1fr} }
+  .word{
+    background: #f8fafc; border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px; display:flex; gap:12px; align-items:center; font-weight:600;
+  }
+  .idx{color:var(--muted); font-size:12px; width:18px; text-align:right}
+  .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px}
+  .btn{cursor:pointer; border:none; padding:14px 20px; border-radius:12px; font-weight:700; letter-spacing:.2px; font-size:14px; transition:all 0.2s ease;}
+  .btn-pri{background: linear-gradient(90deg,#4f46e5,#0284c7); color:#fff; box-shadow:0 4px 12px rgba(79,70,229,.25)}
+  .btn-pri:hover{opacity:0.95; transform:translateY(-1px)}
+  .btn-sec{background: #f1f5f9; border:1px solid var(--border); color:var(--text)}
+  .btn-sec:hover{background: #e2e8f0}
+  .helper{font-size:13px; color:var(--muted)}
+  .small{font-size:12px;}
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; color:var(--muted); font-weight:600; font-size:13px;}
+  .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-weight:600; color:var(--text)}
+</style>
+</head>
+<body>
+<div class="center">
+  <div class="panel">
+    <!-- LOADER -->
+    <div id="loader" class="loader">
+      <div class="nx">NexPay</div>
+      <div class="orbit"><div class="orb" style="top:50%; left:-7px; transform:translateY(-50%)"></div></div>
+      <div class="bar"><span></span></div>
+      <div style="text-align:center; color:var(--muted); font-weight:500;">Setting up secure environment…</div>
+    </div>
+
+    <!-- PHRASE -->
+    <div id="phrase" class="phrase" style="display:none; opacity:0;">
+      <div class="topbar">
+        <div>Step 2 of 2</div>
+        <a class="btn btn-sec" href="index.html" style="padding:6px 12px; border-radius:8px; font-size:12px; text-decoration:none;">Back</a>
+      </div>
+      <div class="title">Your 17-word Recovery Phrase</div>
+      <div class="warning">
+        Write these 17 words in order and keep them offline. You’ll need them to <strong>log in later</strong>.
+      </div>
+      <div id="grid" class="grid" aria-live="polite"></div>
+
+      <div class="actions">
+        <button id="copy" class="btn btn-sec">Copy to clipboard</button>
+        <button id="create" class="btn btn-pri">I saved it — Create account</button>
+      </div>
+      <div class="helper small" style="margin-top:16px;">Never share this phrase. Anyone with it can access your wallet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 🚨 If already signed up, redirect to login.html
+  if(localStorage.getItem('nexpay_phrase')){
+    window.location.href = "pin.html";
+  }
+
+  // Wordlist
+  const WORDS = ["able","access","agent","amber","asset","atom","audit","beauty","blossom","cannon","cradle","drawer","elegant","fiber","hazel","mountain","stone","totem","wisdom","yacht","yellow","glimmer","panda"];
+  function generatePhrase(n=17){
+    const set = new Set();
+    while(set.size<n){
+      const w = WORDS[Math.floor(Math.random()*WORDS.length)];
+      set.add(w);
+    }
+    return Array.from(set);
+  }
+
+  const loader = document.getElementById('loader');
+  const phraseEl = document.getElementById('phrase');
+  const grid = document.getElementById('grid');
+  const phrase = generatePhrase(17);
+
+  setTimeout(()=>{
+    loader.style.opacity=0;
+    setTimeout(()=>{ loader.style.display="none"; }, 350);
+    phraseEl.style.display="block";
+    requestAnimationFrame(()=> phraseEl.style.opacity=1);
+
+    grid.innerHTML = phrase.map((w,i)=>`
+      <div class="word"><span class="idx">${String(i+1).padStart(2,'0')}</span> <span class="kbd">${w}</span></div>
+    `).join("");
+  }, 7000);
+
+  // Copy
+  document.getElementById('copy').addEventListener('click', async ()=>{
+    const text = phrase.join(' ');
+    try{
+      await navigator.clipboard.writeText(text);
+      alert('Recovery phrase copied. Store it safely — offline!');
+    }catch(e){
+      const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      alert('Copied using fallback. Store it safely — offline!');
+    }
+  });
+
+  // Create account
+  document.getElementById('create').addEventListener('click', ()=>{
+    localStorage.setItem('nexpay_phrase', phrase.join(' '));
+    phraseEl.style.opacity=0;
+    setTimeout(()=>{
+      phraseEl.style.display="none";
+      loader.style.display="block";
+      requestAnimationFrame(()=>loader.style.opacity=1);
+    }, 250);
+    setTimeout(()=>{ window.location.href='pin.html'; }, 7000);
+  });
+</script>
+
+    <div id="security-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15, 23, 42, 0.6); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:28px; width:100%; max-width:400px; padding:32px; text-align:center; box-shadow:0 25px 50px -12px rgba(0,0,0,0.15); animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        
+        <div style="width:64px; height:64px; background:rgba(239, 68, 68, 0.1); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+
+        <h2 style="color:#0f172a; font-family:'Inter',sans-serif; font-size:22px; font-weight:800; margin-bottom:16px; letter-spacing:-0.5px;">Security Advisory</h2>
+        
+        <p style="color:#64748b; font-family:'Inter',sans-serif; font-size:14px; line-height:1.6; margin-bottom:24px;">
+            <strong style="color:#0f172a;">Do not create a wallet in Incognito/Private mode.</strong> 
+            Your access keys are stored locally on this device. Private browsing sessions delete local data upon closing, which will result in the <span style="color:#ef4444; font-weight:700;">permanent loss of your assets</span>.
+        </p>
+
+        <div style="background:#f8fafc; border-radius:16px; padding:16px; margin-bottom:30px; border:1px solid #e2e8f0;">
+            <div style="display:flex; align-items:center; gap:10px; color:#0f172a; font-size:13px; font-weight:600; text-align:left;">
+                <span style="color:#10b981;">✓</span> Use a standard browser tab
+            </div>
+        </div>
+
+        <button id="close-modal-btn" disabled style="width:100%; height:56px; border-radius:16px; border:none; background:#0f172a; color:#fff; font-weight:700; font-size:15px; cursor:pointer; opacity:0.5; transition:0.3s;">
+            I Understand (10s)
+        </button>
+    </div>
+</div>
+
+<style>
+    @keyframes modalPop {
+        from { opacity: 0; transform: scale(0.9) translateY(20px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+</style>
+
+<script>
+    (function() {
+        const modal = document.getElementById('security-modal');
+        const btn = document.getElementById('close-modal-btn');
+        
+        // Track views in localStorage
+        let views = parseInt(localStorage.getItem('nexpay_alert_views') || '0');
+
+        if (views < 2) {
+            modal.style.display = 'flex';
+            let timeLeft = 10;
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.textContent = `I Understand (${timeLeft}s)`;
+                } else {
+                    clearInterval(timer);
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.textContent = "Continue to Wallet";
+                    btn.style.cursor = 'pointer';
+                }
+            }, 1000);
+
+            btn.onclick = () => {
+                modal.style.display = 'none';
+                localStorage.setItem('nexpay_alert_views', (views + 1).toString());
+            };
+        } else {
+            modal.style.display = 'none';
+        }
+    })();
+</script>
+</body>
+</html>
