@@ -1,1 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<title>NexPay — P2P Market</title>
+<meta name="theme-color" content="#ffffff"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --pri: #0052ff;
+    --pri2: #10b981;
+    --text: #0f172a;
+    --text-dim: #64748b;
+  }
 
+  * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+
+  /* MODERN HEADER */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 1000;
+  }
+
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .flag { width: 22px; height: 15px; border-radius: 3px; background: linear-gradient(#008751 33%, #fff 33% 66%, #008751 66%); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .brand strong { font-size: 16px; font-weight: 800; letter-spacing: -0.2px; color: var(--text); }
+
+  .select {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px;
+    padding: 6px 12px; font-size: 13px; font-weight: 600; outline: none;
+  }
+
+  /* TABS */
+  .tabs { display: flex; background: #e2e8f0; margin: 15px 20px; border-radius: 10px; padding: 3px; border: 1px solid var(--border); }
+  .tab {
+    flex: 1; text-align: center; padding: 10px; font-size: 14px;
+    font-weight: 700; cursor: pointer; color: var(--text-dim);
+    transition: all 0.2s ease; border-radius: 8px;
+  }
+  .tab.active { background: #ffffff; color: var(--pri); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); }
+
+  /* AD LIST */
+  .ads { padding: 0 20px 100px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .ad {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 18px; border-radius: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .ad-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .name { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; color: var(--text); }
+  .name::after { content: "✓"; background: #10b981; color: #fff; font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: 800; }
+
+  .stats { font-size: 12px; color: var(--text-dim); font-weight: 500; margin-top: 2px; }
+
+  .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; }
+  .price { font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
+
+  .meta { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .meta strong { color: var(--text); }
+
+  /* PAYMENT TAGS */
+  .pay-tags { display: flex; gap: 6px; margin-top: 2px; }
+  .pay-tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: var(--text-dim); border: 1px solid var(--border); }
+  .pay-tag.airtime { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
+  .pay-tag.bank { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+
+  .btn {
+    cursor: pointer; border: none; padding: 10px 22px; border-radius: 10px;
+    font-weight: 700; font-size: 14px;
+    background: var(--pri);
+    color: #fff; transition: transform 0.1s, background 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2);
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-sell { background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
+
+  /* FOOTER NAV */
+  footer {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    display: flex; justify-content: space-around;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    z-index: 2000;
+  }
+  .fitem {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: var(--text-dim); text-decoration: none; font-size: 11px; font-weight: 700;
+  }
+  .fitem.active { color: var(--pri); }
+  .f-icon { font-size: 18px; margin-bottom: 2px; }
+
+  /* ALERT */
+  .alert {
+    position: fixed; left: 20px; right: 20px; bottom: 90px;
+    padding: 14px 20px; border-radius: 12px;
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff; font-weight: 600; text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    opacity: 0; pointer-events: none; transform: translateY(10px);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999; font-size: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .alert.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="flag"></div>
+    <strong>P2P Marketplace</strong>
+  </div>
+  <select id="currency" class="select" onchange="restrictCurrency()">
+    <option value="NGN">NGN 🇳🇬</option>
+    <option value="USD">USD 🇺🇸</option>
+    <option value="EUR">EUR 🇪🇺</option>
+    <option value="AED">AED 🇦🇪</option>
+<option value="AMD">AMD 🇦🇲</option>
+<option value="ARS">ARS 🇦🇷</option>
+<option value="AUD">AUD 🇦🇺</option>
+<option value="AZN">AZN 🇦🇿</option>
+<option value="BGN">BGN 🇧🇬</option>
+<option value="BRL">BRL 🇧🇷</option>
+<option value="BYN">BYN 🇧🇾</option>
+<option value="CAD">CAD 🇨🇦</option>
+<option value="CHF">CHF 🇨🇭</option>
+<option value="CLP">CLP 🇨🇱</option>
+<option value="COP">COP 🇨🇴</option>
+<option value="CZK">CZK 🇨🇿</option>
+<option value="DKK">DKK 🇩🇰</option>
+<option value="DOP">DOP 🇩🇴</option>
+<option value="EGP">EGP 🇪🇬</option>
+<option value="EUR">EUR 🇪🇺</option>
+<option value="GBP">GBP 🇬🇧</option>
+<option value="GEL">GEL 🇬🇪</option>
+<option value="GHS">GHS 🇬🇭</option>
+<option value="HKD">HKD 🇭🇰</option>
+<option value="HUF">HUF 🇭🇺</option>
+<option value="IDR">IDR 🇮🇩</option>
+<option value="ILS">ILS 🇮🇱</option>
+<option value="INR">INR 🇮🇳</option>
+<option value="ISK">ISK 🇮🇸</option>
+<option value="JOD">JOD 🇯🇴</option>
+<option value="JPY">JPY 🇯🇵</option>
+<option value="KES">KES 🇰🇪</option>
+<option value="KGS">KGS 🇰🇬</option>
+<option value="KRW">KRW 🇰🇷</option>
+<option value="KZT">KZT 🇰🇿</option>
+<option value="LKR">LKR 🇱🇰</option>
+<option value="MAD">MAD 🇲🇦</option>
+<option value="MDL">MDL 🇲🇩</option>
+<option value="MXN">MXN 🇲🇽</option>
+<option value="MYR">MYR 🇲🇾</option>
+<option value="NOK">NOK 🇳🇴</option>
+<option value="NZD">NZD 🇳🇿</option>
+<option value="PEN">PEN 🇵🇪</option>
+<option value="PHP">PHP 🇵🇭</option>
+<option value="PKR">PKR 🇵🇰</option>
+<option value="PLN">PLN 🇵🇱</option>
+<option value="QAR">QAR 🇶🇦</option>
+<option value="RON">RON 🇷🇴</option>
+<option value="RUB">RUB 🇷🇺</option>
+<option value="SAR">SAR 🇸🇦</option>
+<option value="SEK">SEK 🇸🇪</option>
+<option value="SGD">SGD 🇸🇬</option>
+<option value="THB">THB 🇹🇭</option>
+<option value="TJS">TJS 🇹🇯</option>
+<option value="TRY">TRY 🇹🇷</option>
+<option value="TWD">TWD 🇹🇼</option>
+<option value="UAH">UAH 🇺🇦</option>
+<option value="UYU">UYU 🇺🇾</option>
+<option value="UZS">UZS 🇺🇿</option>
+<option value="VND">VND 🇻🇳</option>
+<option value="ZAR">ZAR 🇿🇦</option>
+  </select>
+</header>
+
+<div class="tabs">
+  <div id="tabBuy"  class="tab active" onclick="switchTab('buy')">Buy Assets</div>
+  <div id="tabSell" class="tab"         onclick="switchTab('sell')">Sell Assets</div>
+</div>
+
+<section id="ads" class="ads"></section>
+
+<footer>
+  <a class="fitem active" href="p2p.html">
+    <span class="f-icon">⇄</span>
+    <span>P2P Market</span>
+  </a>
+  <a class="fitem" href="order.html">
+    <span class="f-icon">📋</span>
+    <span>My Orders</span>
+  </a>
+</footer>
+
+<div id="toast" class="alert"></div>
+
+<script>
+// All original logic and data names kept exactly as requested
+const banned = localStorage.getItem('p2pBanned') === 'true';
+const namesBuy = ["ASPFIY","Adeyemi Johnson","Grace Olu","Chinedu Kalu","Ngozi Esther","Ibrahim Musa","Bamidele Tayo","Samuel Ojo","Chioma Nneka","Kehinde Afolabi"];
+const namesSell = ["Mobolaji Adebambo","Olawale Hassan","Fatima Bello","John Okeke","Blessing Omolara","Ahmed Abubakar","Chika Onoh","Tosin Ayodele","Musa Danjuma","Adaora Eze"];
+let currentTab='buy';
+
+function toast(msg, good=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background = good ? "#0f172a" : "#ef4444";
+  t.style.color = "#fff";
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function restrictCurrency(){
+  const sel=document.getElementById('currency');
+  if(sel.value!=='NGN'){
+    sel.value='NGN';
+    toast('⚠️ Only NGN trading is supported in your region at this time.');
+  }
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('tabBuy').classList.toggle('active',tab==='buy');
+  document.getElementById('tabSell').classList.toggle('active',tab==='sell');
+  renderAds();
+}
+
+function notEligible(){ toast('❌ Your trade volume is too low for this merchant.'); }
+function clickPrimary(){ if(banned){ toast('🚫 Account Restricted.'); return; } location.href='buy.html'; }
+function clickSellPrimary(){ if(banned){ toast('🚫 Account Restricted.'); return; } location.href='sell.html'; }
+
+function renderAds(){
+  const wrap=document.getElementById('ads');
+  wrap.innerHTML='';
+  const list = currentTab==='buy'?namesBuy:namesSell;
+
+  list.forEach((n,i)=>{
+    const ad=document.createElement('div');
+    ad.className='ad';
+
+    // Merchant success rate (simulated)
+    const rate = (95 + (i % 5)).toFixed(1);
+    const trades = (1200 + (i * 45));
+
+    if(currentTab==='buy'){
+      let paymentTagHtml = `<div class="pay-tags"><span class="pay-tag bank">🏦 Bank Transfer</span></div>`;
+
+      ad.innerHTML=`
+        <div class="ad-top">
+          <div>
+            <div class="name">${n}</div>
+            <div class="stats">${trades} orders · ${rate}% completion</div>
+          </div>
+        </div>
+        <div class="price-row">
+          <div>
+            <div class="meta">Price</div>
+            <div class="price">₦ ${(1539.5 + i).toFixed(2)}</div>
+          </div>
+          <button class="btn">Buy USDT</button>
+        </div>
+        ${paymentTagHtml}
+        <div class="meta" style="margin-top: 4px;">
+          Limit <strong>₦8,764 – ₦300,000</strong><br>
+          Available <strong>${(120+ i*20).toFixed(2)} USDT</strong>
+        </div>
+      `;
+      const btn = ad.querySelector('.btn');
+      btn.addEventListener('click', i===0 ? clickPrimary : notEligible);
+    } else {
+      const qty = (0.0050 + i*0.03).toFixed(4);
+      const maxLimit = 478341 + (i*1800000);
+      ad.innerHTML=`
+        <div class="ad-top">
+          <div>
+            <div class="name">${n}</div>
+            <div class="stats">${trades} orders · ${rate}% completion</div>
+          </div>
+        </div>
+        <div class="price-row">
+          <div>
+            <div class="meta">Price</div>
+            <div class="price">₦ ${(1539.5 + i*50).toFixed(2)}</div>
+          </div>
+          <button class="btn btn-sell">Sell BTC</button>
+        </div>
+        <div class="pay-tags"><span class="pay-tag bank">🏦 Bank Transfer</span></div>
+        <div class="meta" style="margin-top: 4px;">
+          Limit <strong>₦300,000 – ₦${maxLimit.toLocaleString()}</strong><br>
+          Available <strong>${qty} BTC</strong>
+        </div>
+      `;
+      const btn = ad.querySelector('.btn');
+      btn.addEventListener('click', i===0 ? clickSellPrimary : notEligible);
+    }
+    wrap.appendChild(ad);
+  });
+}
+
+// Session Timer Logic
+const TIMEOUT_DURATION = 60000;
+function checkSession() {
+  const lastActive = localStorage.getItem('lastActiveTime');
+  if (lastActive && (Date.now() - parseInt(lastActive) >= TIMEOUT_DURATION)) {
+    localStorage.removeItem('lastActiveTime');
+    window.location.href = 'pin.html';
+  }
+}
+function resetTimer() { localStorage.setItem('lastActiveTime', Date.now().toString()); }
+['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(e => document.addEventListener(e, resetTimer));
+renderAds();
+checkSession();
+setInterval(checkSession, 2000);
+</script>
+</body>
+</html>
