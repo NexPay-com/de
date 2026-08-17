@@ -1,1 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bitcoin Transfer</title>
 
+<style>
+:root{
+  --bg:#0b0f1a;
+  --text-main:#e5e7eb;
+  --text-muted:#9ca3af;
+  --divider:#1f2933;
+  --success:#22c55e;
+  --btc:#f7931a;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text-main);
+}
+
+/* ===== Layout ===== */
+.screen{
+  min-height:100vh;
+  padding:26px 18px 56px;
+}
+
+/* ===== Header ===== */
+.header{
+  text-align:center;
+  margin-top:8px;
+}
+
+.logo{
+  width:48px;
+  height:48px;
+  margin:0 auto 14px;
+}
+
+.title{
+  font-size:16px;
+  font-weight:600;
+}
+
+.status{
+  margin-top:6px;
+  font-size:13px;
+  color:var(--success);
+}
+
+/* ===== Amount ===== */
+.amount{
+  margin:46px 0 34px;
+  text-align:center;
+}
+
+.amount-btc{
+  font-size:40px;
+  font-weight:700;
+  letter-spacing:.4px;
+}
+
+.amount-usd{
+  margin-top:8px;
+  font-size:14px;
+  color:var(--text-muted);
+}
+
+/* ===== Sections ===== */
+.section{
+  margin-top:28px;
+}
+
+.section-title{
+  font-size:12px;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:12px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  padding:14px 0;
+}
+
+.label{
+  font-size:14px;
+  color:var(--text-muted);
+}
+
+.value{
+  font-size:14px;
+  font-weight:500;
+  text-align:right;
+  word-break:break-word;
+}
+
+.divider{
+  height:1px;
+  background:var(--divider);
+}
+
+/* ===== Editable but invisible ===== */
+[contenteditable]{
+  outline:none;
+  cursor:text;
+}
+
+/* ===== Footer ===== */
+.footer{
+  margin-top:38px;
+  text-align:center;
+  font-size:12px;
+  color:var(--text-muted);
+}
+</style>
+</head>
+
+<body>
+
+<div class="screen">
+
+  <!-- Header -->
+  <div class="header">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+      <circle cx="16" cy="16" r="16" fill="#f7931a"/>
+      <path d="M17.4 15.3c1.7-.4 2.8-1.4 2.5-3-.4-1.9-2.3-2.6-4.8-2.6V7.6h-1.4v2.1h-1.1V7.6h-1.4v2.2H8.7v1.6h1.2c.7 0 .9.4 1 .7v5.6c0 .3-.2.5-.6.5H8.7v1.8h2.5v2.3h1.4v-2.2h1.1v2.2h1.4v-2.3c2.7-.1 4.6-.8 5.1-3 .4-1.8-.7-2.7-2.4-3z" fill="#fff"/>
+    </svg>
+
+    <div class="title">Bitcoin Überweisung</div>
+    <div class="status">Abgeschlossen</div>
+  </div>
+
+  <!-- Amount -->
+  <div class="amount">
+    <div class="amount-btc" contenteditable>0.0033 BTC</div>
+    <div class="amount-usd" contenteditable>€200.00 EUR</div>
+  </div>
+
+  <!-- Transaction Details -->
+  <div class="section">
+    <div class="section-title">Transaktionsdetails</div>
+
+    <div class="row">
+      <div class="label">Datum</div>
+      <div class="value" id="date" contenteditable></div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="label">Netzwerk</div>
+      <div class="value">Bitcoin</div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="label">Netzwerkgebühr</div>
+      <div class="value" contenteditable>0.00004 BTC</div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="label">Bestätigungen</div>
+      <div class="value" contenteditable>6+</div>
+    </div>
+  </div>
+
+  <!-- Recipient -->
+  <div class="section">
+    <div class="section-title">Empfänger</div>
+
+    <div class="row">
+      <div class="label">Empfänger UID</div>
+      <div class="value" contenteditable>635424</div>
+    </div>
+  </div>
+
+  <!-- Reference -->
+  <div class="section">
+    <div class="section-title">Referenz</div>
+
+    <div class="row">
+      <div class="label">Transaktions ID</div>
+      <div class="value" contenteditable>BTC-7A94F2C81D</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Transaktion erfolgreich auf der Bitcoin Blockchain aufgezeichnet.
+  </div>
+
+</div>
+
+<script>
+const now = new Date();
+const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+document.getElementById("date").innerText = "Heute · " + time;
+</script>
+
+</body>
+</html>
