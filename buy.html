@@ -1,1 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<title>NexPay — Buy USDT</title>
+<meta name="theme-color" content="#ffffff"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --pri: #0052ff;
+    --pri2: #10b981;
+    --text: #0f172a;
+    --text-dim: #64748b;
+  }
 
+  * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+  html, body { height: 100%; margin: 0; background-color: var(--bg); overflow-x: hidden; }
+
+  body {
+    display: flex; flex-direction: column; align-items: center; padding: 20px;
+    color: var(--text);
+  }
+
+  .wrap { width: 100%; max-width: 480px; animation: fadeIn 0.5s ease; margin-top: 10px; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  h2 { font-size: 24px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; color: var(--text); }
+  .seller { color: var(--text-dim); font-size: 14px; margin-bottom: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .seller strong { color: var(--pri); }
+
+  /* Review Tag Component */
+  .review-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    user-select: none;
+  }
+  .review-badge:active { transform: scale(0.96); background: #e2e8f0; }
+  .review-badge svg { fill: #f59e0b; width: 13px; height: 13px; }
+  .review-badge .good-rate { color: #10b981; font-weight: 800; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+
+  label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .input-group { position: relative; }
+
+  input {
+    width: 100%; padding: 18px; border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #f1f5f9;
+    color: var(--text); font-size: 18px; font-weight: 700;
+    outline: none; transition: all 0.2s;
+  }
+
+  input:focus { border-color: var(--pri); background: #ffffff; box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1); }
+
+  .currency-tag { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); font-weight: 800; color: var(--text-dim); }
+
+  #usdtInfo {
+    margin: 15px 0; padding: 12px; border-radius: 10px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #059669; font-weight: 700; text-align: center;
+    display: none; /* Hidden until calculation */
+  }
+
+  .btn {
+    width: 100%; padding: 16px; border: none; border-radius: 12px;
+    font-weight: 700; font-size: 16px;
+    background: var(--pri);
+    color: #fff; cursor: pointer; transition: transform 0.1s, background 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2);
+    margin-top: 5px;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .note {
+    margin-top: 20px; font-size: 13px; color: var(--text-dim);
+    padding-top: 15px; border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  .note strong { color: var(--text); }
+
+  footer {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .fitem { color: var(--text-dim); text-decoration: none; font-weight: 700; font-size: 12px; }
+  .active { color: var(--pri); }
+
+  /* Modal Drawer Styles */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px); display: none; justify-content: center;
+    align-items: flex-end; z-index: 1000; animation: fadeInOverlay 0.2s ease;
+  }
+  @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-card {
+    background: #ffffff; width: 100%; max-width: 480px; height: 80vh;
+    border-top-left-radius: 24px; border-top-right-radius: 24px;
+    display: flex; flex-direction: column; overflow: hidden;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .modal-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-header h3 { margin: 0; font-size: 18px; font-weight: 800; }
+  .close-btn {
+    background: #f1f5f9; border: none; font-size: 18px; font-weight: 800;
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: var(--text-dim);
+  }
+
+  .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+
+  /* Review Stats Overview Header */
+  .review-summary {
+    background: #f8fafc; border: 1px solid var(--border);
+    border-radius: 16px; padding: 16px; display: flex;
+    justify-content: space-between; align-items: center; margin-bottom: 20px;
+  }
+  .summary-score { font-size: 28px; font-weight: 800; color: var(--text); }
+  .summary-score span { font-size: 14px; color: var(--text-dim); font-weight: 600; }
+  .summary-metrics { display: flex; gap: 12px; }
+  .metric-tag { padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; text-align: center; }
+  .metric-good { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+  .metric-bad { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+  /* Review List Elements */
+  .review-item {
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .review-user { font-weight: 700; font-size: 14px; color: var(--text); }
+  .review-time { font-size: 12px; color: var(--text-dim); }
+  .review-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; margin-bottom: 6px;
+  }
+  .tag-good { background: #ecfdf5; color: #059669; }
+  .tag-bad { background: #fef2f2; color: #dc2626; }
+  .review-text { font-size: 13px; color: #334155; line-height: 1.4; margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h2>Buy USDT</h2>
+  <div class="seller">
+    Seller • <strong> ASPFIY </strong>
+    <!-- Review Badge Button -->
+    <div class="review-badge" onclick="openReviews()">
+      <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+      <span class="good-rate">77.8%</span>
+      <span>(27 Reviews)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <label for="amount">Amount (₦8,764 – ₦300,000)</label>
+    <div class="input-group">
+      <input id="amount" type="number" inputmode="numeric" pattern="\d*" placeholder="0.00" oninput="calcUSDT()"/>
+      <span class="currency-tag">NGN</span>
+    </div>
+
+    <div id="usdtInfo"></div>
+
+    <button class="btn" onclick="proceed()">Buy USDT</button>
+
+    <div class="note">
+      <strong>Seller’s note:</strong><br>
+      <em>Send the exact Amount and upload your receipt for fast release.</em>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a class="fitem active" href="p2p.html">P2P Market</a>
+  <a class="fitem" href="order.html">My Orders</a>
+</footer>
+
+<!-- Reviews Modal Overlay -->
+<div id="reviewModal" class="modal-overlay" onclick="closeReviews(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Seller Reviews</h3>
+      <button class="close-btn" onclick="closeReviews()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <!-- Rating Summary Header -->
+      <div class="review-summary">
+        <div>
+          <div class="summary-score">77.8%</div>
+          <span>Positive Rate</span>
+        </div>
+        <div class="summary-metrics">
+          <div class="metric-tag metric-good">👍 21 Good</div>
+          <div class="metric-tag metric-bad">👎 6 Bad</div>
+        </div>
+      </div>
+
+      <!-- List Container (Populated dynamically) -->
+      <div id="reviewsList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Review Data Store (21 Good, 6 Bad)
+const reviewsData = [
+  // 21 Good Reviews
+  { user: "User***81", type: "good", text: "Fast release, smooth transaction!", time: "2 mins ago" },
+  { user: "Crypto***09", type: "good", text: "Very reliable seller. Payment confirmed instantly.", time: "1 hour ago" },
+  { user: "Trader***42", type: "good", text: "Honest and quick response.", time: "3 hours ago" },
+  { user: "Naija***77", type: "good", text: "Good trade, will buy again.", time: "Yesterday" },
+  { user: "Sam***11", type: "good", text: "Prompt release as promised.", time: "Yesterday" },
+  { user: "Kelechi***01", type: "good", text: "Great experience!", time: "2 days ago" },
+  { user: "Mike***88", type: "good", text: "Fast payment processing.", time: "2 days ago" },
+  { user: "Tunde***55", type: "good", text: "Very trustworthy merchant.", time: "3 days ago" },
+  { user: "Bello***04", type: "good", text: "Released in less than 2 minutes.", time: "3 days ago" },
+  { user: "Emeka***33", type: "good", text: "Smooth process.", time: "4 days ago" },
+  { user: "David***90", type: "good", text: "Highly recommended!", time: "4 days ago" },
+  { user: "Blessing***12", type: "good", text: "Very active seller.", time: "5 days ago" },
+  { user: "John***67", type: "good", text: "Everything went smoothly.", time: "5 days ago" },
+  { user: "User***44", type: "good", text: "Super fast asset transfer.", time: "6 days ago" },
+  { user: "Alpha***99", type: "good", text: "Excellent customer handling.", time: "1 week ago" },
+  { user: "Victor***21", type: "good", text: "No delays at all.", time: "1 week ago" },
+  { user: "Grace***15", type: "good", text: "P2P transfer complete within time.", time: "1 week ago" },
+  { user: "Chidi***08", type: "good", text: "Good communication.", time: "1 week ago" },
+  { user: "Paul***73", type: "good", text: "Fast and easy.", time: "2 weeks ago" },
+  { user: "Suleiman***31", type: "good", text: "Great trader.", time: "2 weeks ago" },
+  { user: "Alex***50", type: "good", text: "Quick release, thanks!", time: "2 weeks ago" },
+
+  // 6 Bad Reviews
+  { user: "Zero***02", type: "bad", text: "Slow to release. Took more than 10 minutes.", time: "1 day ago" },
+  { user: "Slow***89", type: "bad", text: "Did not confirm payment on time.", time: "3 days ago" },
+  { user: "Anon***14", type: "bad", text: "Kept asking for bank payment receipt proof twice.", time: "5 days ago" },
+  { user: "Dev***66", type: "bad", text: "Offline when order was opened.", time: "1 week ago" },
+  { user: "Tayo***91", type: "bad", text: "Late response on trade chat.", time: "2 weeks ago" },
+  { user: "User***05", type: "bad", text: "Took too long to verify.", time: "2 weeks ago" }
+];
+
+function renderReviews() {
+  const container = document.getElementById('reviewsList');
+  container.innerHTML = reviewsData.map(rev => `
+    <div class="review-item">
+      <div class="review-top">
+        <span class="review-user">${rev.user}</span>
+        <span class="review-time">${rev.time}</span>
+      </div>
+      <span class="review-tag ${rev.type === 'good' ? 'tag-good' : 'tag-bad'}">
+        ${rev.type === 'good' ? '👍 Positive' : '👎 Negative'}
+      </span>
+      <p class="review-text">${rev.text}</p>
+    </div>
+  `).join('');
+}
+
+function openReviews() {
+  renderReviews();
+  document.getElementById('reviewModal').style.display = 'flex';
+}
+
+function closeReviews(event) {
+  if (!event || event.target.id === 'reviewModal' || event.target.classList.contains('close-btn')) {
+    document.getElementById('reviewModal').style.display = 'none';
+  }
+}
+
+function calcUSDT(){
+  const amt = parseInt(document.getElementById('amount').value, 10);
+  const info = document.getElementById('usdtInfo');
+  if(!isNaN(amt) && amt >= 8764 && amt <= 300000){
+    const usdt = (amt / 1380).toFixed(2);
+    info.style.display = "block";
+    info.textContent = `You receive ≈ ${usdt} USDT`;
+  } else {
+    info.style.display = "none";
+  }
+}
+
+function proceed(){
+  const amt = parseInt(document.getElementById('amount').value, 10);
+  if(isNaN(amt) || amt < 8764 || amt > 300000){
+    alert("Please enter an amount between ₦8,764 and ₦300,000.");
+    return;
+  }
+
+  const order = {
+    id: 'ORD-'+Date.now(),
+    seller: 'ASPFIY',
+    amount: amt,
+    stage: 'make_payment',
+    stageEndAt: Date.now() + 15*60*1000,
+    messages: [],
+    autoReplySent: false,
+    createdAt: Date.now(),
+    status: 'In Progress'
+  };
+
+  localStorage.setItem('currentP2POrder', JSON.stringify(order));
+  const list = JSON.parse(localStorage.getItem('orders') || '[]');
+  list.unshift({id:order.id, seller:order.seller, amount:order.amount, status:'In Progress', createdAt:order.createdAt});
+  localStorage.setItem('orders', JSON.stringify(list));
+
+  location.href='payment.html';
+}
+
+// Session Timer Logic
+const TIMEOUT_DURATION = 60000;
+function checkSession() {
+    const lastActive = localStorage.getItem('lastActiveTime');
+    if (lastActive && (Date.now() - parseInt(lastActive) >= TIMEOUT_DURATION)) {
+        localStorage.removeItem('lastActiveTime');
+        window.location.href = 'pin.html';
+    }
+}
+function resetTimer() { localStorage.setItem('lastActiveTime', Date.now().toString()); }
+['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(ev => document.addEventListener(ev, resetTimer));
+checkSession();
+setInterval(checkSession, 2000);
+</script>
+
+</body>
+</html>
