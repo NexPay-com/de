@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
+    <title>NexPay — Success</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --success: #059669;
+            --text: #0f172a;
+            --text-dim: #64748b;
+            --pri: #0052ff;
+        }
 
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg); color: var(--text);
+            overflow: hidden; /* Prevents bounce scrolling on mobile */
+        }
+
+        .app-shell {
+            height: 100%; display: flex; flex-direction: column;
+            background-color: var(--bg);
+            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
+        }
+
+        .header { height: 60px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .close-icon { position: absolute; left: 0; font-size: 20px; color: var(--text-dim); text-decoration: none; }
+
+        .content { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 20px; }
+
+        /* SUCCESS ANIMATION */
+        .success-anim {
+            width: 80px; height: 80px; background: #ecfdf5;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--success); font-size: 32px; position: relative; margin-bottom: 15px;
+            border: 1px solid #a7f3d0;
+        }
+        .success-anim::after {
+            content: ''; position: absolute; inset: -5px; border: 2px solid var(--success);
+            border-radius: 50%; opacity: 0.3; animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.4); opacity: 0; } }
+
+        .status-text { font-size: 22px; font-weight: 800; margin-bottom: 5px; letter-spacing: -0.5px; color: var(--text); }
+        .confirmed-pill {
+            background: #ecfdf5; color: var(--success);
+            font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 100px;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 30px;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* MAIN AMOUNT */
+        .amount-display { text-align: center; margin-bottom: 40px; }
+        .btc-val { font-size: 38px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; color: var(--text); }
+        .eur-val { font-size: 16px; color: var(--text-dim); font-weight: 500; }
+
+        /* DATA TABLE */
+        .receipt-card {
+            width: 100%; background: var(--card); border: 1px solid var(--border);
+            border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+        .row:not(:last-child) { border-bottom: 1px solid var(--border); }
+
+        .label { color: var(--text-dim); font-size: 13px; font-weight: 500; }
+        .value { color: var(--text); font-size: 14px; font-weight: 600; text-align: right; }
+        .mono { font-family: monospace; color: var(--pri); font-size: 12px; }
+
+        /* INVISIBLE INPUT */
+        .uid-input {
+            background: transparent; border: none; outline: none;
+            color: var(--text); font-size: 14px; font-weight: 600;
+            text-align: right; font-family: 'Inter', sans-serif;
+            width: 160px; cursor: default;
+        }
+
+        /* ACTIONS */
+        .footer { padding: 20px 0 30px; display: grid; gap: 12px; }
+        .btn {
+            width: 100%; padding: 18px; border-radius: 12px; font-size: 16px;
+            font-weight: 700; border: none; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary { background: var(--pri); color: #ffffff; box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2); }
+        .btn-secondary { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+        .btn:active { transform: scale(0.97); }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-shell">
+        <div class="header">
+            <a href="dashboard.html" class="close-icon">✕</a>
+            <span style="font-weight: 700; font-size: 15px; color: var(--text-dim);">Transaction Details</span>
+        </div>
+
+        <div class="content">
+            <div class="success-anim">✓</div>
+            <div class="status-text">Sent Successfully</div>
+            <div class="confirmed-pill">Confirmed</div>
+
+            <div class="amount-display">
+                <div class="btc-val">0.0056 BTC</div>
+                <div class="eur-val">≈ €300.62 EUR</div>
+            </div>
+
+            <div class="receipt-card">
+                <div class="row">
+                    <span class="label">To (UID)</span>
+                    <span class="value"><input type="text" id="res-uid" class="uid-input" placeholder="---"></span>
+                </div>
+                <div class="row">
+                    <span class="label">Network</span>
+                    <span class="value">Bitcoin Network</span>
+                </div>
+                <div class="row">
+                    <span class="label">Network Fee</span>
+                    <span class="value" style="color: var(--success);">Included</span>
+                </div>
+                <div class="row">
+                    <span class="label">Transaction ID</span>
+                    <span class="value mono">bc1q...9x2z</span>
+                </div>
+                <div class="row">
+                    <span class="label">Date</span>
+                    <span class="value" id="date-now">...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="btn btn-primary" onclick="window.print()">Share PDF Receipt</button>
+            <button class="btn btn-secondary" onclick="location.href='dashboard.html'">Return to Home</button>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('res-uid');
+
+        // Load previously entered UID if available
+        input.value = localStorage.getItem('saved_uid') || '';
+
+        // Save UID as user types or pastes
+        input.addEventListener('input', () => {
+            localStorage.setItem('saved_uid', input.value);
+        });
+
+        // Set the current date in a professional format
+        const d = new Date();
+        const dateString = d.toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        }).replace(',', '');
+        document.getElementById('date-now').textContent = dateString;
+
+        // Keep input ready for instant paste anywhere on the page
+        document.addEventListener('click', () => input.focus());
+        window.onload = () => input.focus();
+    </script>
+</body>
+</html>
